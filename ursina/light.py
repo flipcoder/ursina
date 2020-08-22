@@ -29,19 +29,19 @@ class Light():
             else:
                 print("Err ",key," is not a valid keyword")
 
-            scene.lights.append(self)   # light added for all subsequent entities
+        scene.lights.append(self)   # light added for all subsequent entities
 
-            if self.type == 'ambient':
-                ambientLight = AmbientLight('ambientLight')
-                ambientLight.setColor(self.color)
-                self.node = scene.attachNewNode(ambientLight)
+        if self.type == 'ambient':
+            ambientLight = AmbientLight('ambientLight')
+            ambientLight.setColor(self.color)
+            self.node = scene.attachNewNode(ambientLight)
 
-            if self.type == 'directional':
-                directionalLight = DirectionalLight('directionalLight')
-                directionalLight.setColor(self.color)
-                self.node = scene.attachNewNode(directionalLight)
-                # This light should be facing straight down, but clearly it isn't.
-                self.node.setHpr(self.direction)  # convert vector to Hpr (in degrees!?) first
+        if self.type == 'directional':
+            directionalLight = DirectionalLight('directionalLight')
+            directionalLight.setColor(self.color)
+            self.node = scene.attachNewNode(directionalLight)
+            # This light should be facing straight down, but clearly it isn't.
+            self.node.setHpr(self.direction)  # convert vector to Hpr (in degrees!?) first
 
 
 
