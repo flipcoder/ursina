@@ -1,5 +1,5 @@
 from panda3d.core import NodePath
-from panda3d.core import DirectionalLight, AmbientLight
+from panda3d.core import DirectionalLight, AmbientLight, PointLight
 from ursina.vec3 import Vec3
 from ursina import scene
 from ursina import color
@@ -12,13 +12,15 @@ class Light():
         self.type = 'ambient'              # ambient or directional for now
         self.color = color.rgb(0.3,0.3,0.3,1)        # a modest amount of full-spectrum light
         self.direction = Vec3(-1,-1,-1)         # shining down from top-right corner, behind camera
+        self.position = None
+        self.attenuation = None
         self.node = None
 
 
         for key, value in kwargs.items():
 
             if key == 'type':
-                if value=='ambient' or value=='directional':
+                if value in ('ambient', 'directional', 'point'):
                     self.type = value
                 else:
                     print("ERR Light type is not 'ambient' or 'directional'")
@@ -26,6 +28,10 @@ class Light():
                 self.color = value
             elif key == 'direction':
                 self.direction = value
+            elif key == 'attenuation':
+                self.attenuation = value
+            elif key == 'position':
+                self.position = value
             else:
                 print("Err ",key," is not a valid keyword")
 
@@ -36,17 +42,26 @@ class Light():
             ambientLight.setColor(self.color)
             self.node = scene.attachNewNode(ambientLight)
 
-        if self.type == 'directional':
+        elif self.type == 'directional':
             directionalLight = DirectionalLight('directionalLight')
             directionalLight.setColor(self.color)
             self.node = scene.attachNewNode(directionalLight)
             # This light should be facing straight down, but clearly it isn't.
             self.node.setHpr(self.direction)  # convert vector to Hpr (in degrees!?) first
 
-
-
-
-
+        elif self.type == 'point':
+            pointLight = PointLight('pointLight')
+            pointLight.setColor(self.color)
+            
+            if self.attenuation is None:
+                self.attenuation = Vec3(1,0,0)
+            pointLight.setAttenuation(self.attenuation)
+            
+            if self.position is None:
+                self.position = Vec3(0,0,0)
+            
+            self.node = scene.attachNewNode(pointLight)
+            self.node.setPos(self.position)
 
 if __name__ == '__main__':
     from ursina import *
